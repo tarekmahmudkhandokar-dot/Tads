@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tads Ads Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- TAds Official Script -->
+  <script src="https://js.tads.me/widget.js" async></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+    .btn {
+      width: 100%;
+      max-width: 320px;
+      padding: 15px;
+      margin: 10px auto;
+      background: #2563eb;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .box {
+      margin-top: 25px;
+      padding: 15px;
+      background: #020617;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🚀 Tads Ads Test</h1>
+  <p>Original TAds ads testing (No demo / No fake)</p>
+
+  <!-- Fullscreen Button -->
+  <button class="btn" onclick="showFullscreenAd()">
+    📺 Show Fullscreen Ad
+  </button>
+
+  <!-- TGB Ad Box -->
+  <div class="box">
+    <p>⬇️ TGB Banner Ad ⬇️</p>
+
+    <div class="tads-widget"
+      data-publisher="d7fe9c59"
+      data-widget="9405">
+    </div>
+
+  </div>
+
+  <script>
+    function showFullscreenAd() {
+      if (typeof Tads !== "undefined") {
+        Tads.showFullScreen({
+          publisher: "d7fe9c59",
+          widget: "9404"
+        });
+      } else {
+        alert("TAds script not loaded yet. Try again.");
+      }
+    }
+  </script>
+
+</body>
+</html>
