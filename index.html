@@ -2,87 +2,93 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TAds Ads Test</title>
+<title>PP Coin – TAds Test</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Telegram WebApp -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- TAds Official Script with check -->
-<script>
-(function () {
-  var s = document.createElement("script");
-  s.src = "https://js.tads.me/widget.js";
-  s.async = true;
-
-  s.onload = function () {
-    console.log("✅ TAds script loaded");
-    document.getElementById("ad-status").innerHTML = "✅ TAds Script Loaded";
-  };
-
-  s.onerror = function () {
-    console.error("❌ TAds script failed");
-    document.getElementById("ad-status").innerHTML =
-      "❌ TAds Script Not Loaded (Telegram may block it)";
-  };
-
-  document.head.appendChild(s);
-})();
-</script>
+<!-- TAds Official Script -->
+<script src="https://js.tads.me/widget.js" async></script>
 
 <style>
-body {
+body{
   background:#0f172a;
-  color:white;
-  font-family:Arial;
+  color:#fff;
+  font-family:Arial, sans-serif;
   text-align:center;
   padding:20px;
 }
-.box {
+
+.card{
   background:#020617;
+  border-radius:14px;
+  padding:18px;
+  margin:16px 0;
+}
+
+button{
+  background:#22c55e;
+  color:#000;
+  border:none;
+  padding:14px 22px;
   border-radius:12px;
-  padding:15px;
-  margin-top:20px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
 }
-.status {
-  margin-top:10px;
-  font-size:14px;
-  opacity:.85;
-}
+
+button:active{opacity:.85}
 </style>
 </head>
 
 <body>
 
-<h2>🚀 TAds Ads Test</h2>
-<p>Original TAds ads only</p>
+<!-- ================= TGB ================= -->
+<div class="card">
+  <button onclick="showTGB()">Show PP Coin TGB</button>
 
-<div id="ad-status" class="status">⏳ Loading TAds script...</div>
-
-<!-- FULLSCREEN / MAIN AD -->
-<div class="tads-widget"
-     data-publisher="d7fe9c59"
-     data-widget="9404">
-</div>
-
-<div class="box">
-  <p>⬇️ TGB Banner ⬇️</p>
-
-  <!-- BANNER AD -->
-  <div class="tads-widget"
-       data-publisher="d7fe9c59"
-       data-widget="9405">
+  <div id="tgbContainer" style="display:none;margin-top:15px">
+    <div class="tads-widget"
+         data-publisher="d7fe9c59"
+         data-widget="9405">
+    </div>
   </div>
 </div>
 
+<!-- ================= FULLSCREEN ================= -->
+<div class="card">
+  <button onclick="showFullscreen()">Show PP Coin Fullscreen</button>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   if (window.Telegram && Telegram.WebApp) {
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
-    console.log("📲 Telegram WebApp detected");
   }
 });
+
+function showTGB(){
+  document.getElementById("tgbContainer").style.display = "block";
+}
+
+function showFullscreen(){
+  if (!window.TAdsWidget) {
+    alert("Ad not ready yet");
+    return;
+  }
+
+  TAdsWidget.show({
+    publisher: "d7fe9c59",
+    widget: "9404",
+    onClose: function(watched){
+      if(watched){
+        // এখানে পরে reward / mining logic বসাবে
+      }
+    }
+  });
+}
 </script>
 
 </body>
