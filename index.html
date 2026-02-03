@@ -1,95 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PP Coin – TAds Test</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>PP Coin – TAds Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Telegram WebApp -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Telegram WebApp -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- TAds Official Script -->
-<script src="https://js.tads.me/widget.js" async></script>
+  <!-- TAds Official Script (recommended src from docs) -->
+  <script src="https://w.tads.me/widget.js" async></script>
 
-<style>
-body{
-  background:#0f172a;
-  color:#fff;
-  font-family:Arial, sans-serif;
-  text-align:center;
-  padding:20px;
-}
+  <style>
+    body {
+      background: #0f172a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
 
-.card{
-  background:#020617;
-  border-radius:14px;
-  padding:18px;
-  margin:16px 0;
-}
+    .card {
+      background: #020617;
+      border-radius: 14px;
+      padding: 18px;
+      margin: 16px 0;
+    }
 
-button{
-  background:#22c55e;
-  color:#000;
-  border:none;
-  padding:14px 22px;
-  border-radius:12px;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-}
+    button {
+      background: #22c55e;
+      color: #000;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-button:active{opacity:.85}
-</style>
+    button:active {
+      opacity: 0.85;
+    }
+
+    #tgbContainer {
+      min-height: 150px; /* TGB-এর জন্য কিছু স্পেস দাও */
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ================= TGB ================= -->
-<div class="card">
-  <button onclick="showTGB()">Show PP Coin TGB</button>
+  <!-- ================= TGB (Banner/Text-Graphic Block) ================= -->
+  <div class="card">
+    <h3>TAds TGB (Banner)</h3>
+    <button onclick="showTGB()">Show PP Coin TGB</button>
 
-  <div id="tgbContainer" style="display:none;margin-top:15px">
-    <div class="tads-widget"
-         data-publisher="d7fe9c59"
-         data-widget="9405">
+    <div id="tgbContainer" style="display:none; margin-top:15px">
+      <div class="tads-widget"
+           data-publisher="d7fe9c59"
+           data-widget="9405">
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ================= FULLSCREEN ================= -->
-<div class="card">
-  <button onclick="showFullscreen()">Show PP Coin Fullscreen</button>
-</div>
+  <!-- ================= FULLSCREEN (Rewarded/Interstitial) ================= -->
+  <div class="card">
+    <h3>TAds Fullscreen (Rewarded/Interstitial)</h3>
+    <button onclick="showFullscreen()">Show PP Coin Fullscreen</button>
+  </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-  }
-});
-
-function showTGB(){
-  document.getElementById("tgbContainer").style.display = "block";
-}
-
-function showFullscreen(){
-  if (!window.TAdsWidget) {
-    alert("Ad not ready yet");
-    return;
-  }
-
-  TAdsWidget.show({
-    publisher: "d7fe9c59",
-    widget: "9404",
-    onClose: function(watched){
-      if(watched){
-        // এখানে পরে reward / mining logic বসাবে
+  <script>
+    // Telegram Mini App Init
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.Telegram?.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        Telegram.WebApp.enableClosingConfirmation(); // optional: prevent accidental close
       }
+    });
+
+    // Show TGB container (lazy load style)
+    function showTGB() {
+      const container = document.getElementById("tgbContainer");
+      container.style.display = "block";
+      // TAds auto-renders once visible + script loaded
     }
-  });
-}
-</script>
+
+    // Show Fullscreen Ad
+    function showFullscreen() {
+      if (!window.TAdsWidget) {
+        alert("TAds not loaded yet. Please wait a moment and try again.");
+        return;
+      }
+
+      TAdsWidget.show({
+        publisher: "d7fe9c59",
+        widget: "9404",
+        onClose: function(watched) {
+          if (watched) {
+            // User fully watched the ad → give reward here
+            alert("Ad watched successfully! +100 PP Coin rewarded 🎉");
+            // এখানে তোমার mining / coin add logic বসাবে
+            // উদাহরণ: addCoins(100);
+          } else {
+            alert("Ad closed early. No reward.");
+          }
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
