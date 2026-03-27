@@ -1,114 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PP Coin – TAds Test</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PP Coin Claim</title>
 
-  <!-- Telegram WebApp -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Telegram WebApp -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- TAds Official Script (recommended src from docs) -->
-  <script src="https://w.tads.me/widget.js" async></script>
+<!-- AdExtra Script -->
+<script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
 
-  <style>
-    body {
-      background: #0f172a;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+}
 
-    .card {
-      background: #020617;
-      border-radius: 14px;
-      padding: 18px;
-      margin: 16px 0;
-    }
+.container {
+    padding: 20px;
+}
 
-    button {
-      background: #22c55e;
-      color: #000;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+.profile {
+    margin-top: 20px;
+}
 
-    button:active {
-      opacity: 0.85;
-    }
+.profile img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #00ffcc;
+}
 
-    #tgbContainer {
-      min-height: 150px; /* TGB-এর জন্য কিছু স্পেস দাও */
-    }
-  </style>
+.name {
+    font-size: 20px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.userid {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.btn {
+    margin-top: 40px;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #00ffcc, #00ccff);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0,255,204,0.7);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+#ad-container {
+    margin-top: 30px;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- ================= TGB (Banner/Text-Graphic Block) ================= -->
-  <div class="card">
-    <h3>TAds TGB (Banner)</h3>
-    <button onclick="showTGB()">Show PP Coin TGB</button>
+<div class="container">
 
-    <div id="tgbContainer" style="display:none; margin-top:15px">
-      <div class="tads-widget"
-           data-publisher="d7fe9c59"
-           data-widget="9405">
-      </div>
+    <h2>💰 Claim Reward</h2>
+
+    <div class="profile">
+        <img id="profilePic" src="https://via.placeholder.com/80">
+        <div class="name" id="name">Loading...</div>
+        <div class="userid" id="userid">ID: ...</div>
     </div>
-  </div>
 
-  <!-- ================= FULLSCREEN (Rewarded/Interstitial) ================= -->
-  <div class="card">
-    <h3>TAds Fullscreen (Rewarded/Interstitial)</h3>
-    <button onclick="showFullscreen()">Show PP Coin Fullscreen</button>
-  </div>
+    <button class="btn" onclick="showAd()">🚀 Claim 1 USDT</button>
 
-  <script>
-    // Telegram Mini App Init
-    document.addEventListener("DOMContentLoaded", () => {
-      if (window.Telegram?.WebApp) {
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        Telegram.WebApp.enableClosingConfirmation(); // optional: prevent accidental close
-      }
-    });
+    <div id="ad-container">
+        <!-- Ad will load here -->
+        <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
+    </div>
 
-    // Show TGB container (lazy load style)
-    function showTGB() {
-      const container = document.getElementById("tgbContainer");
-      container.style.display = "block";
-      // TAds auto-renders once visible + script loaded
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+// Get Telegram User Data
+const user = tg.initDataUnsafe?.user;
+
+if (user) {
+    document.getElementById("name").innerText =
+        (user.first_name || "") + " " + (user.last_name || "");
+
+    document.getElementById("userid").innerText = "ID: " + user.id;
+
+    if (user.photo_url) {
+        document.getElementById("profilePic").src = user.photo_url;
     }
+}
 
-    // Show Fullscreen Ad
-    function showFullscreen() {
-      if (!window.TAdsWidget) {
-        alert("TAds not loaded yet. Please wait a moment and try again.");
-        return;
-      }
+// Show Ad on Button Click
+function showAd() {
+    alert("Ad is loading...");
 
-      TAdsWidget.show({
-        publisher: "d7fe9c59",
-        widget: "9404",
-        onClose: function(watched) {
-          if (watched) {
-            // User fully watched the ad → give reward here
-            alert("Ad watched successfully! +100 PP Coin rewarded 🎉");
-            // এখানে তোমার mining / coin add logic বসাবে
-            // উদাহরণ: addCoins(100);
-          } else {
-            alert("Ad closed early. No reward.");
-          }
-        }
-      });
-    }
-  </script>
+    // Ad already auto loads because script is included
+    // You can track click here
+    console.log("User clicked claim:", user?.id);
+}
+</script>
 
 </body>
 </html>
