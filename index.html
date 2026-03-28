@@ -7,75 +7,14 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
+
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .profile {
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .profile img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid #00ffcc;
-        }
-
-        .name {
-            font-size: 20px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        .userid {
-            font-size: 14px;
-            opacity: 0.7;
-        }
-
-        .btn {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 18px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(45deg, #00ffcc, #00ccff);
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
-            transition: 0.3s;
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        #ad-container {
-            margin-top: 30px;
-            min-height: 100px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
+        body { margin: 0; font-family: Arial, sans-serif; background: #0f2027; color: white; text-align: center; }
+        .container { padding: 20px; }
+        .profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #00ffcc; }
+        .btn { margin-top: 40px; padding: 15px 30px; font-size: 18px; border-radius: 30px; background: #00ffcc; cursor: pointer; font-weight: bold; }
+        #ad-status { margin-top: 15px; font-size: 14px; color: #ffcc00; }
     </style>
 </head>
 
@@ -83,51 +22,55 @@
 
 <div class="container">
     <h2>💰 Claim Reward</h2>
-
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/80" alt="Profile">
-        <div class="name" id="name">Loading...</div>
-        <div class="userid" id="userid">ID: ...</div>
+        <img id="profilePic" src="https://via.placeholder.com/80">
+        <div id="name" style="font-weight: bold; margin-top: 10px;">Loading...</div>
+        <div id="userid" style="opacity: 0.7;">ID: ...</div>
     </div>
+
+    <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
 
     <button class="btn" onclick="showAd()">🚀 Claim 1 USDT</button>
-
-    <div id="ad-container">
-        <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
-    </div>
+    <div id="ad-status"></div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.ready();
 
-    // টেলিগ্রাম ইউজার ডাটা সেট করা
+    // ইউজার ডাটা সেটআপ
     const user = tg.initDataUnsafe?.user;
     if (user) {
         document.getElementById("name").innerText = (user.first_name || "") + " " + (user.last_name || "");
         document.getElementById("userid").innerText = "ID: " + user.id;
-        if (user.photo_url) {
-            document.getElementById("profilePic").src = user.photo_url;
-        }
+        if (user.photo_url) document.getElementById("profilePic").src = user.photo_url;
     }
 
-    // বিজ্ঞাপন লোড করার ফাংশন
+    [span_1](start_span)// Step 3: Implement the ad display logic[span_1](end_span)
     function showAd() {
-        // বিজ্ঞাপন কন্টেইনার চেক করা
-        const adBox = document.getElementById("fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23");
-        
-        // যদি আগে থেকে স্ক্রিপ্ট না থাকে তবে নতুন করে লোড করা
-        if (!document.querySelector('script[src*="adextra.io"]')) {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = "https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js";
-            document.head.appendChild(script);
-            
-            tg.showAlert("Ad is loading... Please wait.");
-        } else {
-            // যদি স্ক্রিপ্ট থাকে কিন্তু বিজ্ঞাপন না দেখায় তবে রি-রেন্ডার করার চেষ্টা
-            console.log("Ad script already exists.");
+        document.getElementById("ad-status").innerText = "Loading Ad...";
+
+        [span_2](start_span)// Success এবং Error হ্যান্ডলিং ফাংশন[span_2](end_span)
+        var onSuccess = function() {
+            document.getElementById("ad-status").innerText = "Ad watched successfully! 1 USDT added.";
+            tg.showAlert("Congratulations! Reward Claimed.");
+        };
+
+        var onError = function() {
+            document.getElementById("ad-status").innerText = "Failed to load ad. Try again.";
+            tg.showAlert("Ad failed to load. Please check your connection.");
+        };
+
+        [span_3](start_span)[span_4](start_span)// AdExtra-র মেইন ফাংশন কল করা[span_3](end_span)[span_4](end_span)
+        try {
+            if (typeof p_adextra === "function") {
+                p_adextra(onSuccess, onError);
+            } else {
+                onError();
+            }
+        } catch (e) {
+            console.error("AdExtra Error:", e);
+            onError();
         }
     }
 </script>
