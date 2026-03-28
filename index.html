@@ -1,82 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PP Coin Claim</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PP Coin Claim</title>
 
-<!-- Telegram WebApp -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- AdExtra Script -->
-<script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
-    text-align: center;
-}
+        .container {
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
 
-.container {
-    padding: 20px;
-}
+        .profile {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
 
-.profile {
-    margin-top: 20px;
-}
+        .profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #00ffcc;
+        }
 
-.profile img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid #00ffcc;
-}
+        .name {
+            font-size: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
 
-.name {
-    font-size: 20px;
-    margin-top: 10px;
-    font-weight: bold;
-}
+        .userid {
+            font-size: 14px;
+            opacity: 0.7;
+        }
 
-.userid {
-    font-size: 14px;
-    opacity: 0.7;
-}
+        .btn {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, #00ffcc, #00ccff);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+            transition: 0.3s;
+        }
 
-.btn {
-    margin-top: 40px;
-    padding: 15px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 30px;
-    background: linear-gradient(45deg, #00ffcc, #00ccff);
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(0,255,204,0.7);
-}
+        .btn:active {
+            transform: scale(0.95);
+        }
 
-.btn:active {
-    transform: scale(0.95);
-}
-
-#ad-container {
-    margin-top: 30px;
-}
-</style>
+        #ad-container {
+            margin-top: 30px;
+            min-height: 100px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
-
     <h2>💰 Claim Reward</h2>
 
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/80">
+        <img id="profilePic" src="https://via.placeholder.com/80" alt="Profile">
         <div class="name" id="name">Loading...</div>
         <div class="userid" id="userid">ID: ...</div>
     </div>
@@ -84,38 +93,43 @@ body {
     <button class="btn" onclick="showAd()">🚀 Claim 1 USDT</button>
 
     <div id="ad-container">
-        <!-- Ad will load here -->
         <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
     </div>
-
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
 
-// Get Telegram User Data
-const user = tg.initDataUnsafe?.user;
-
-if (user) {
-    document.getElementById("name").innerText =
-        (user.first_name || "") + " " + (user.last_name || "");
-
-    document.getElementById("userid").innerText = "ID: " + user.id;
-
-    if (user.photo_url) {
-        document.getElementById("profilePic").src = user.photo_url;
+    // টেলিগ্রাম ইউজার ডাটা সেট করা
+    const user = tg.initDataUnsafe?.user;
+    if (user) {
+        document.getElementById("name").innerText = (user.first_name || "") + " " + (user.last_name || "");
+        document.getElementById("userid").innerText = "ID: " + user.id;
+        if (user.photo_url) {
+            document.getElementById("profilePic").src = user.photo_url;
+        }
     }
-}
 
-// Show Ad on Button Click
-function showAd() {
-    alert("Ad is loading...");
-
-    // Ad already auto loads because script is included
-    // You can track click here
-    console.log("User clicked claim:", user?.id);
-}
+    // বিজ্ঞাপন লোড করার ফাংশন
+    function showAd() {
+        // বিজ্ঞাপন কন্টেইনার চেক করা
+        const adBox = document.getElementById("fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23");
+        
+        // যদি আগে থেকে স্ক্রিপ্ট না থাকে তবে নতুন করে লোড করা
+        if (!document.querySelector('script[src*="adextra.io"]')) {
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = "https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js";
+            document.head.appendChild(script);
+            
+            tg.showAlert("Ad is loading... Please wait.");
+        } else {
+            // যদি স্ক্রিপ্ট থাকে কিন্তু বিজ্ঞাপন না দেখায় তবে রি-রেন্ডার করার চেষ্টা
+            console.log("Ad script already exists.");
+        }
+    }
 </script>
 
 </body>
