@@ -3,42 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PP Coin Claim</title>
+    <title>PP Coin Claim & Boost</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
+    <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
     <style>
         body { margin: 0; font-family: Arial, sans-serif; background: #0f2027; color: white; text-align: center; }
         .container { padding: 20px; }
         .profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #00ffcc; }
-        .btn { margin-top: 40px; padding: 15px 30px; font-size: 18px; border-radius: 30px; background: #00ffcc; cursor: pointer; font-weight: bold; }
-        #ad-status { margin-top: 15px; font-size: 14px; color: #ffcc00; }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 30px; }
+        .btn { width: 80%; max-width: 300px; padding: 15px; font-size: 18px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-claim { background: #00ffcc; color: black; box-shadow: 0 0 15px rgba(0, 255, 204, 0.5); }
+        .btn-boost { background: #ffcc00; color: black; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
+        .btn:active { transform: scale(0.95); }
+        #ad-status { margin-top: 15px; font-size: 14px; color: #00ffcc; min-height: 20px; }
+        
+        /* Banner Ad Container */
+        .ad-box { margin-top: 20px; min-height: 50px; width: 100%; display: flex; justify-content: center; }
     </style>
 </head>
 
 <body>
 
 <div class="container">
-    <h2>💰 Claim Reward</h2>
+    <h2>💰 PP Coin Station</h2>
     <div class="profile">
         <img id="profilePic" src="https://via.placeholder.com/80">
         <div id="name" style="font-weight: bold; margin-top: 10px;">Loading...</div>
         <div id="userid" style="opacity: 0.7;">ID: ...</div>
     </div>
 
-    <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
-
-    <button class="btn" onclick="showAd()">🚀 Claim 1 USDT</button>
     <div id="ad-status"></div>
+
+    <div class="btn-group">
+        <button class="btn btn-claim" onclick="handleAd('full')">🚀 Claim 1 USDT</button>
+        
+        <button class="btn btn-boost" onclick="handleAd('banner')">⚡ Boost Mining</button>
+    </div>
+
+    <div class="ad-box">
+        <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
+    </div>
+    <div class="ad-box">
+        <div id="c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0"></div>
+    </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
+    tg.ready();
 
-    // ইউজার ডাটা সেটআপ
+    // User data loading
     const user = tg.initDataUnsafe?.user;
     if (user) {
         document.getElementById("name").innerText = (user.first_name || "") + " " + (user.last_name || "");
@@ -46,30 +65,30 @@
         if (user.photo_url) document.getElementById("profilePic").src = user.photo_url;
     }
 
-    [span_1](start_span)// Step 3: Implement the ad display logic[span_1](end_span)
-    function showAd() {
-        document.getElementById("ad-status").innerText = "Loading Ad...";
+    // Main Ad Handler Function
+    function handleAd(type) {
+        const status = document.getElementById("ad-status");
+        status.innerText = "Ad is loading... Please wait.";
 
-        [span_2](start_span)// Success এবং Error হ্যান্ডলিং ফাংশন[span_2](end_span)
-        var onSuccess = function() {
-            document.getElementById("ad-status").innerText = "Ad watched successfully! 1 USDT added.";
-            tg.showAlert("Congratulations! Reward Claimed.");
+        const onSuccess = function() {
+            status.innerText = type === 'full' ? "Reward Claimed! +1 USDT" : "Mining Boosted! ⚡";
+            tg.showAlert(type === 'full' ? "1 USDT added to your balance!" : "Your mining speed has increased!");
         };
 
-        var onError = function() {
-            document.getElementById("ad-status").innerText = "Failed to load ad. Try again.";
-            tg.showAlert("Ad failed to load. Please check your connection.");
+        const onError = function() {
+            status.innerText = "Ad failed to load. Try again.";
+            tg.showAlert("Check your connection or Ad-blocker settings.");
         };
 
-        [span_3](start_span)[span_4](start_span)// AdExtra-র মেইন ফাংশন কল করা[span_3](end_span)[span_4](end_span)
         try {
+            [span_2](start_span)// PDF-এর নিয়ম অনুযায়ী p_adextra কল করা[span_2](end_span)
             if (typeof p_adextra === "function") {
                 p_adextra(onSuccess, onError);
             } else {
                 onError();
             }
         } catch (e) {
-            console.error("AdExtra Error:", e);
+            console.error("AdExtra Execution Error:", e);
             onError();
         }
     }
