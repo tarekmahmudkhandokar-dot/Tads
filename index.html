@@ -3,43 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PP Coin Claim & Boost</title>
+    <title>PP Coin - Official Ad Setup</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
+    
+    <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d1b2a; color: white; text-align: center; overflow-x: hidden; }
-        .container { padding: 20px; padding-bottom: 100px; /* ব্যানার অ্যাডের জন্য জায়গা */ }
-        .profile { margin-top: 20px; }
-        .profile img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #00ffcc; box-shadow: 0 0 15px #00ffcc; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0f2027; color: white; text-align: center; }
+        .container { padding: 20px; }
+        .profile img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #00ffcc; margin-top: 15px; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 40px; }
-        .btn { width: 85%; max-width: 320px; padding: 16px; font-size: 18px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; color: #000; }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 30px; }
+        .btn { width: 85%; max-width: 320px; padding: 15px; font-size: 18px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         
-        .btn-claim { background: linear-gradient(45deg, #00ffcc, #00aba9); box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4); }
-        .btn-boost { background: linear-gradient(45deg, #ffcc00, #ffb300); box-shadow: 0 5px 15px rgba(255, 204, 0, 0.4); }
-        
+        .btn-claim { background: #00ffcc; color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+        .btn-boost { background: #ffcc00; color: #000; box-shadow: 0 0 15px rgba(255, 204, 0, 0.4); }
         .btn:active { transform: scale(0.95); }
         
-        #ad-status { margin-top: 20px; font-size: 14px; color: #00ffcc; height: 20px; }
-        
-        /* Banner Ad Container - Fixed at Bottom */
-        #banner-ad-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            min-height: 50px;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 5px 0;
-            z-index: 1000;
-        }
+        #ad-status { margin-top: 20px; font-size: 14px; color: #00ffcc; min-height: 20px; }
 
-        /* Fullscreen ad container (hidden) */
-        #fullscreen-ad-box { display: none; }
+        /* Banner Box */
+        .banner-box { position: fixed; bottom: 10px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; }
     </style>
 </head>
 
@@ -49,90 +36,83 @@
     <h2>💰 PP Coin Station</h2>
     
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/90">
-        <div id="name" style="font-size: 20px; font-weight: bold; margin-top: 10px;">User Name</div>
-        <div id="userid" style="opacity: 0.7; font-size: 14px;">ID: 00000000</div>
+        <img id="profilePic" src="https://via.placeholder.com/85">
+        <div id="name" style="font-weight: bold; margin-top: 10px; font-size: 20px;">Loading...</div>
+        <div id="userid" style="opacity: 0.7;">ID: ...</div>
     </div>
 
-    <div id="ad-status">Ready to earn!</div>
+    <div id="ad-status">System Ready</div>
 
     <div class="btn-group">
-        <button class="btn btn-claim" onclick="triggerFullscreenAd()">🚀 Claim 1 USDT</button>
+        <button class="btn btn-claim" onclick="showAdExtra('full')">🚀 Claim 1 USDT</button>
         
-        <button class="btn btn-boost" onclick="refreshBannerAd()">⚡ Boost Mining</button>
+        <button class="btn btn-boost" onclick="showAdExtra('banner')">⚡ Boost Mining</button>
     </div>
 
-    <div id="fullscreen-ad-box">
-        <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>
-    </div>
-</div>
+    <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div> </div>
 
-<div id="banner-ad-container">
+<div class="banner-box">
     <div id="c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0"></div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.ready();
 
-    // টেলিগ্রাম ইউজার ডাটা সেটআপ
+    // ইউজার ডাটা লোড
     const user = tg.initDataUnsafe?.user;
     if (user) {
-        document.getElementById("name").innerText = (user.first_name || "") + " " + (user.last_name || "");
+        document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
         document.getElementById("userid").innerText = "ID: " + user.id;
         if (user.photo_url) document.getElementById("profilePic").src = user.photo_url;
     }
 
-    // ১. ফুলস্ক্রিন অ্যাড লোড করার ফাংশন (Claim Button)
-    function triggerFullscreenAd() {
+    // --- AdExtra Integration Logic ---
+
+    function showAdExtra(type) {
         const status = document.getElementById("ad-status");
-        status.innerText = "Loading Fullscreen Ad...";
-        
-        const adBox = document.getElementById('fullscreen-ad-box');
-        adBox.innerHTML = '<div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div>'; // কন্টেইনার রিসেট
-        
-        const script = document.createElement('script');
-        script.src = "https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js";
-        script.async = true;
-        
-        script.onload = () => {
-            status.innerText = "Ad Played! Reward: +1 USDT";
-            tg.showScanQrPopup({ text: "Verifying Reward..." }); // সিম্পল পপআপ ইফেক্ট
-            setTimeout(() => { tg.closeScanQrPopup(); tg.showAlert("1 USDT successfully added!"); }, 2000);
+        status.innerText = "Connecting to Ad Server...";
+
+        // আপনার Rewarded URL (যদি থাকে, না থাকলে fetch অংশটি বাদ দিতে পারেন)
+        const rewardUrl = "YOUR_REWARD_POSTBACK_URL_HERE"; 
+
+        // ১. সাকসেস ফাংশন
+        var onSuccess = () => {
+            status.innerText = "Success! Reward added.";
+            tg.showAlert("Congratulations! You received your reward.");
+            
+            // যদি সার্ভারে ডাটা পাঠাতে চান
+            if(rewardUrl !== "YOUR_REWARD_POSTBACK_URL_HERE") {
+                fetch(rewardUrl).then(response => console.log("Reward Tracked"));
+            }
         };
 
-        script.onerror = () => {
-            status.innerText = "Failed to load ad.";
-            tg.showAlert("Ad not available. Try again later.");
+        // ২. এরর ফাংশন
+        var onError = () => {
+            status.innerText = "Ad failed to load. Try again.";
+            tg.showAlert("Sorry, no ads available right now.");
         };
 
-        adBox.appendChild(script);
+        // ৩. অ্যাড কল করা (ডকুমেন্টেশন অনুযায়ী p_adextra ব্যবহার)
+        try {
+            if (typeof p_adextra === "function") {
+                p_adextra(onSuccess, onError);
+            } else {
+                // যদি স্ক্রিপ্ট লোড হতে দেরি হয়, তবে ২ সেকেন্ড পর আবার চেষ্টা করা
+                status.innerText = "Retrying ad...";
+                setTimeout(() => {
+                    if (typeof p_adextra === "function") {
+                        p_adextra(onSuccess, onError);
+                    } else {
+                        onError();
+                    }
+                }, 2000);
+            }
+        } catch (e) {
+            console.error("AdExtra Error:", e);
+            onError();
+        }
     }
-
-    // ২. ব্যানার অ্যাড লোড/রিফ্রেশ করার ফাংশন (Boost Button)
-    function refreshBannerAd() {
-        const status = document.getElementById("ad-status");
-        status.innerText = "Boosting Mining Speed...";
-
-        const bannerBox = document.getElementById('banner-ad-container');
-        bannerBox.innerHTML = '<div id="c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0"></div>'; // রিসেট
-        
-        const script = document.createElement('script');
-        script.src = "https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js";
-        script.async = true;
-
-        script.onload = () => {
-            status.innerText = "Mining Boosted ⚡";
-            tg.showAlert("Mining speed increased for 1 hour!");
-        };
-
-        bannerBox.appendChild(script);
-    }
-
-    // পেজ লোড হওয়ার সময় অটোমেটিক ব্যানার লোড করা
-    window.onload = refreshBannerAd;
-
 </script>
 
 </body>
