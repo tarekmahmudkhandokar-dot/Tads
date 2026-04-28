@@ -1,118 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PP Coin - Official Ad Setup</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PP Coin App</title>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
-    
-    <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0f2027; color: white; text-align: center; }
-        .container { padding: 20px; }
-        .profile img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid #00ffcc; margin-top: 15px; }
-        
-        .btn-group { display: flex; flex-direction: column; gap: 15px; align-items: center; margin-top: 30px; }
-        .btn { width: 85%; max-width: 320px; padding: 15px; font-size: 18px; border-radius: 30px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        
-        .btn-claim { background: #00ffcc; color: #000; box-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
-        .btn-boost { background: #ffcc00; color: #000; box-shadow: 0 0 15px rgba(255, 204, 0, 0.4); }
-        .btn:active { transform: scale(0.95); }
-        
-        #ad-status { margin-top: 20px; font-size: 14px; color: #00ffcc; min-height: 20px; }
+<!-- AdExtra -->
+<script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
+<script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
-        /* Banner Box */
-        .banner-box { position: fixed; bottom: 10px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; }
-    </style>
+<style>
+body { margin: 0; font-family: Arial; background: #0f172a; color: white; text-align: center; }
+
+.page { display: none; padding: 20px; }
+.active { display: block; }
+
+button {
+    background: #22c55e;
+    border: none;
+    padding: 12px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+}
+
+.nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #111;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-    <h2>💰 PP Coin Station</h2>
-    
-    <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/85">
-        <div id="name" style="font-weight: bold; margin-top: 10px; font-size: 20px;">Loading...</div>
-        <div id="userid" style="opacity: 0.7;">ID: ...</div>
-    </div>
+<!-- ================= HOME PAGE ================= -->
+<div id="home" class="page active">
 
-    <div id="ad-status">System Ready</div>
+<h2>💰 PP Coin Station</h2>
 
-    <div class="btn-group">
-        <button class="btn btn-claim" onclick="showAdExtra('full')">🚀 Claim 1 USDT</button>
-        
-        <button class="btn btn-boost" onclick="showAdExtra('banner')">⚡ Boost Mining</button>
-    </div>
+<p id="name">Loading...</p>
+<p id="userid"></p>
 
-    <div id="fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23"></div> </div>
+<p>Coin: <span id="coin-home">0</span></p>
 
-<div class="banner-box">
-    <div id="c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0"></div>
+<button onclick="showAdExtra()">🚀 Watch Ad</button>
+
+</div>
+
+<!-- ================= TASK PAGE ================= -->
+<div id="task" class="page">
+
+<h2>🎯 Complete Tasks & Earn</h2>
+
+<p>Your Coin: <span id="coin-task">0</span></p>
+
+<button id="rewards-button">Open Offerwall</button>
+
+</div>
+
+<!-- ================= NAVIGATION ================= -->
+<div class="nav">
+<button onclick="openPage('home')">🏠 Home</button>
+<button onclick="openPage('task')">📋 Task</button>
 </div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
 
-    // ইউজার ডাটা লোড
-    const user = tg.initDataUnsafe?.user;
-    if (user) {
-        document.getElementById("name").innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-        document.getElementById("userid").innerText = "ID: " + user.id;
-        if (user.photo_url) document.getElementById("profilePic").src = user.photo_url;
+// ================= LOCAL STORAGE =================
+let userId = localStorage.getItem("userId");
+if (!userId) {
+    userId = "user_" + Math.floor(Math.random() * 1000000);
+    localStorage.setItem("userId", userId);
+}
+
+let userCoins = parseInt(localStorage.getItem("coins")) || 0;
+
+function saveCoins() {
+    localStorage.setItem("coins", userCoins);
+    updateUI();
+}
+
+function updateUI() {
+    document.getElementById("coin-home").innerText = userCoins;
+    document.getElementById("coin-task").innerText = userCoins;
+}
+
+// ================= TELEGRAM USER =================
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+const user = tg.initDataUnsafe?.user;
+if (user) {
+    document.getElementById("name").innerText = user.first_name;
+    document.getElementById("userid").innerText = "ID: " + user.id;
+}
+
+// ================= NAVIGATION =================
+function openPage(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+}
+
+// ================= AdExtra =================
+function showAdExtra() {
+    if (typeof p_adextra === "function") {
+        p_adextra(() => {
+            userCoins += 5;
+            saveCoins();
+            alert("Ad watched! +5 coins");
+        }, () => {
+            alert("Ad failed");
+        });
+    } else {
+        alert("Ad not ready");
     }
+}
 
-    // --- AdExtra Integration Logic ---
+// ================= Offerwall Load =================
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window.loadOfferWallSDK) {
+    const script = document.createElement('script');
+    script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+});
 
-    function showAdExtra(type) {
-        const status = document.getElementById("ad-status");
-        status.innerText = "Connecting to Ad Server...";
+// ================= Offerwall Init =================
+(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
+  () => {
+    window.loadOfferWallSDK({
+      projectId: '3256',
+      userId: userId
+    })
+    .then(sdk => {
+      window.gigaOfferWallSDK = sdk;
 
-        // আপনার Rewarded URL (যদি থাকে, না থাকলে fetch অংশটি বাদ দিতে পারেন)
-        const rewardUrl = "YOUR_REWARD_POSTBACK_URL_HERE"; 
+      sdk.on('rewardClaim', async (data) => {
 
-        // ১. সাকসেস ফাংশন
-        var onSuccess = () => {
-            status.innerText = "Success! Reward added.";
-            tg.showAlert("Congratulations! You received your reward.");
-            
-            // যদি সার্ভারে ডাটা পাঠাতে চান
-            if(rewardUrl !== "YOUR_REWARD_POSTBACK_URL_HERE") {
-                fetch(rewardUrl).then(response => console.log("Reward Tracked"));
-            }
-        };
+        let rewardCoin = 10;
 
-        // ২. এরর ফাংশন
-        var onError = () => {
-            status.innerText = "Ad failed to load. Try again.";
-            tg.showAlert("Sorry, no ads available right now.");
-        };
+        userCoins += rewardCoin;
+        saveCoins();
 
-        // ৩. অ্যাড কল করা (ডকুমেন্টেশন অনুযায়ী p_adextra ব্যবহার)
-        try {
-            if (typeof p_adextra === "function") {
-                p_adextra(onSuccess, onError);
-            } else {
-                // যদি স্ক্রিপ্ট লোড হতে দেরি হয়, তবে ২ সেকেন্ড পর আবার চেষ্টা করা
-                status.innerText = "Retrying ad...";
-                setTimeout(() => {
-                    if (typeof p_adextra === "function") {
-                        p_adextra(onSuccess, onError);
-                    } else {
-                        onError();
-                    }
-                }, 2000);
-            }
-        } catch (e) {
-            console.error("AdExtra Error:", e);
-            onError();
-        }
+        alert("🎉 Task Completed! +10 coins");
+
+        await sdk.confirmReward(data.rewardId, data.hash);
+      });
+
+    })
+    .catch(error => console.log(error));
+  }
+);
+
+// ================= OPEN OFFERWALL =================
+document.getElementById("rewards-button")
+  .addEventListener("click", () => {
+    if (window.gigaOfferWallSDK) {
+        window.gigaOfferWallSDK.open();
+    } else {
+        alert("Offerwall not ready");
     }
+});
+
+// INIT UI
+updateUI();
+
 </script>
 
 </body>
