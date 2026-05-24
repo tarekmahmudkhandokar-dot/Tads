@@ -6,36 +6,40 @@
 <title>PP Coin App</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
 
 <!-- AdExtra -->
 <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
 <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
 <style>
-body { margin: 0; font-family: Arial; background: #0f172a; color: white; text-align: center; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; text-align: center; }
+    .page { display: none; padding: 20px; min-height: 100vh; }
+    .active { display: block; }
 
-.page { display: none; padding: 20px; }
-.active { display: block; }
+    button {
+        background: #22c55e;
+        border: none;
+        padding: 14px 20px;
+        margin: 10px 0;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        width: 90%;
+        font-weight: bold;
+    }
+    .task-btn { background: #3b82f6; }
 
-button {
-    background: #22c55e;
-    border: none;
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 10px;
-    color: white;
-    font-size: 16px;
-}
-
-.nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #111;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-}
+    .nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: #111827;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        border-top: 1px solid #334155;
+    }
 </style>
 </head>
 
@@ -43,43 +47,43 @@ button {
 
 <!-- ================= HOME PAGE ================= -->
 <div id="home" class="page active">
-
-<h2>💰 PP Coin Station</h2>
-
-<p id="name">Loading...</p>
-<p id="userid"></p>
-
-<p>Coin: <span id="coin-home">0</span></p>
-
-<button onclick="showAdExtra()">🚀 Watch Ad</button>
-
+    <h2>💰 PP Coin Station</h2>
+    <p id="name">Loading...</p>
+    <p id="userid"></p>
+    <p>Coin: <span id="coin-home">0</span></p>
+    <button onclick="showAdExtra()">🚀 Watch Ad (+5 Coins)</button>
 </div>
 
 <!-- ================= TASK PAGE ================= -->
 <div id="task" class="page">
+    <h2>🎯 Complete Tasks & Earn</h2>
+    <p>Your Coin: <span id="coin-task">0</span></p>
 
-<h2>🎯 Complete Tasks & Earn</h2>
-
-<p>Your Coin: <span id="coin-task">0</span></p>
-
-<button id="rewards-button">Open Offerwall</button>
-
+    <button onclick="showTelegaAd()" class="task-btn">📺 Watch Telega Ad (+10 Coins)</button>
+    <button onclick="showAdExtra()" class="task-btn">🚀 Watch AdExtra (+5 Coins)</button>
+    <button id="rewards-button">🌟 Open Offerwall</button>
 </div>
 
 <!-- ================= NAVIGATION ================= -->
 <div class="nav">
-<button onclick="openPage('home')">🏠 Home</button>
-<button onclick="openPage('task')">📋 Task</button>
+    <button onclick="openPage('home')">🏠 Home</button>
+    <button onclick="openPage('task')">📋 Tasks</button>
 </div>
 
 <script>
+// ================= Telegram & Basic Setup =================
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-// ================= LOCAL STORAGE =================
-let userId = localStorage.getItem("userId");
-if (!userId) {
-    userId = "user_" + Math.floor(Math.random() * 1000000);
-    localStorage.setItem("userId", userId);
+const user = tg.initDataUnsafe?.user;
+if (user) {
+    document.getElementById("name").innerText = user.first_name || "User";
+    document.getElementById("userid").innerText = "ID: " + user.id;
 }
+
+// ================= Coins System =================
+let userId = localStorage.getItem("userId") || "user_" + Math.floor(Math.random() * 1000000);
+localStorage.setItem("userId", userId);
 
 let userCoins = parseInt(localStorage.getItem("coins")) || 0;
 
@@ -93,20 +97,24 @@ function updateUI() {
     document.getElementById("coin-task").innerText = userCoins;
 }
 
-// ================= TELEGRAM USER =================
-const tg = window.Telegram.WebApp;
-tg.expand();
+// ================= Telega.io Ads =================
+const ads = window.TelegaIn.AdsController.create_miniapp({
+    token: '3cead624-45a4-4bf8-8825-1253a9c87981'
+});
 
-const user = tg.initDataUnsafe?.user;
-if (user) {
-    document.getElementById("name").innerText = user.first_name;
-    document.getElementById("userid").innerText = "ID: " + user.id;
-}
-
-// ================= NAVIGATION =================
-function openPage(page) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(page).classList.add("active");
+function showTelegaAd() {
+    ads.ad_show({
+        adBlockUuid: "d7ba3cee-ae84-4c68-9713-57912b25f5c4",
+        onReward: () => {
+            userCoins += 10;
+            saveCoins();
+            alert("🎉 +10 PP Coins Added!");
+        },
+        onError: (err) => {
+            console.error(err);
+            alert("⚠️ Ad not available right now.");
+        }
+    });
 }
 
 // ================= AdExtra =================
@@ -115,63 +123,62 @@ function showAdExtra() {
         p_adextra(() => {
             userCoins += 5;
             saveCoins();
-            alert("Ad watched! +5 coins");
-        }, () => {
-            alert("Ad failed");
-        });
+            alert("✅ +5 Coins Added!");
+        }, () => alert("❌ Ad failed"));
     } else {
-        alert("Ad not ready");
+        alert("Ad not ready yet");
     }
 }
 
-// ================= Offerwall Load =================
+// ================= GigaPub Offerwall (Fixed Loading) =================
+let gigaOfferWallSDK = null;
+
+function initOfferwall() {
+    if (!window.loadOfferWallSDK) return;
+
+    window.loadOfferWallSDK({
+        projectId: '3256',
+        userId: userId
+    })
+    .then(sdk => {
+        gigaOfferWallSDK = sdk;
+        console.log("✅ Offerwall SDK Loaded Successfully");
+
+        sdk.on('rewardClaim', async (data) => {
+            userCoins += 10;
+            saveCoins();
+            alert("🎉 Task Completed! +10 Coins");
+            await sdk.confirmReward(data.rewardId, data.hash);
+        });
+    })
+    .catch(err => console.error("Offerwall Init Error:", err));
+}
+
+// Load Offerwall Script
 document.addEventListener('DOMContentLoaded', function() {
-  if (!window.loadOfferWallSDK) {
     const script = document.createElement('script');
     script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
     script.async = true;
+    script.onload = initOfferwall;
     document.head.appendChild(script);
-  }
 });
 
-// ================= Offerwall Init =================
-(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
-  () => {
-    window.loadOfferWallSDK({
-      projectId: '3256',
-      userId: userId
-    })
-    .then(sdk => {
-      window.gigaOfferWallSDK = sdk;
-
-      sdk.on('rewardClaim', async (data) => {
-
-        let rewardCoin = 10;
-
-        userCoins += rewardCoin;
-        saveCoins();
-
-        alert("🎉 Task Completed! +10 coins");
-
-        await sdk.confirmReward(data.rewardId, data.hash);
-      });
-
-    })
-    .catch(error => console.log(error));
-  }
-);
-
-// ================= OPEN OFFERWALL =================
-document.getElementById("rewards-button")
-  .addEventListener("click", () => {
-    if (window.gigaOfferWallSDK) {
-        window.gigaOfferWallSDK.open();
+// Open Offerwall Button
+document.getElementById("rewards-button").addEventListener("click", () => {
+    if (gigaOfferWallSDK) {
+        gigaOfferWallSDK.open();
     } else {
-        alert("Offerwall not ready");
+        alert("Offerwall is still loading... Please wait 2-3 seconds and try again.");
     }
 });
 
-// INIT UI
+// ================= Navigation =================
+function openPage(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+}
+
+// ================= Init =================
 updateUI();
 
 </script>
