@@ -7,34 +7,49 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<!-- Telega.io SDK -->
+<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
+
 <!-- AdExtra -->
 <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
 <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
 <style>
-body { margin: 0; font-family: Arial; background: #0f172a; color: white; text-align: center; }
+body { 
+    margin: 0; 
+    font-family: Arial; 
+    background: #0f172a; 
+    color: white; 
+}
 
-.page { display: none; padding: 20px; }
+.page { display: none; padding: 20px; min-height: 100vh; }
 .active { display: block; }
 
 button {
     background: #22c55e;
     border: none;
-    padding: 12px 20px;
-    margin: 10px;
-    border-radius: 10px;
+    padding: 14px 20px;
+    margin: 10px 0;
+    border-radius: 12px;
     color: white;
     font-size: 16px;
+    width: 90%;
+    font-weight: bold;
+}
+
+.task-btn {
+    background: #3b82f6;
 }
 
 .nav {
     position: fixed;
     bottom: 0;
     width: 100%;
-    background: #111;
+    background: #111827;
     display: flex;
     justify-content: space-around;
-    padding: 10px;
+    padding: 8px 0;
+    border-top: 1px solid #334155;
 }
 </style>
 </head>
@@ -43,36 +58,69 @@ button {
 
 <!-- ================= HOME PAGE ================= -->
 <div id="home" class="page active">
-
-<h2>💰 PP Coin Station</h2>
-
-<p id="name">Loading...</p>
-<p id="userid"></p>
-
-<p>Coin: <span id="coin-home">0</span></p>
-
-<button onclick="showAdExtra()">🚀 Watch Ad</button>
-
+    <h2>💰 PP Coin Station</h2>
+    <p id="name">Loading...</p>
+    <p id="userid"></p>
+    <p>Coin: <span id="coin-home">0</span></p>
+    <button onclick="showAdExtra()">🚀 Watch Ad</button>
 </div>
 
 <!-- ================= TASK PAGE ================= -->
 <div id="task" class="page">
+    <h2>🎯 Complete Tasks & Earn</h2>
+    <p>Your Coin: <span id="coin-task">0</span></p>
 
-<h2>🎯 Complete Tasks & Earn</h2>
+    <div class="space-y-4 mt-6">
+        <button onclick="showTelegaAd('fullscreen')" class="task-btn">
+            📺 Fullscreen Ad (+50 Coins)
+        </button>
 
-<p>Your Coin: <span id="coin-task">0</span></p>
+        <button onclick="showTelegaAd('interstitial')" class="task-btn">
+            🎬 Interstitial Ad (+50 Coins)
+        </button>
 
-<button id="rewards-button">Open Offerwall</button>
+        <button onclick="showTelegaAd('rewarded')" class="task-btn">
+            🎁 Rewarded Ad (+50 Coins)
+        </button>
 
+        <button id="rewards-button">Open Offerwall</button>
+    </div>
 </div>
 
 <!-- ================= NAVIGATION ================= -->
 <div class="nav">
-<button onclick="openPage('home')">🏠 Home</button>
-<button onclick="openPage('task')">📋 Task</button>
+    <button onclick="openPage('home')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    </button>
+    <button onclick="openPage('task')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM12 3c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    </button>
 </div>
 
 <script>
+// ================= Telega.io Setup =================
+const ads = window.TelegaIn.AdsController.create_miniapp({
+    token: '3cead624-45a4-4bf8-8825-1253a9c87981'
+});
+
+// ================= Show Telega Ad =================
+function showTelegaAd(type) {
+    ads.ad_show({
+        adBlockUuid: "d7ba3cee-ae84-4c68-9713-57912b25f5c4",
+        onClose: () => {
+            console.log("Ad closed");
+        },
+        onReward: () => {
+            userCoins += 50;
+            saveCoins();
+            alert("🎉 Congratulations! +50 PP Coins Added to your balance!");
+        },
+        onError: (err) => {
+            console.error("Ad Error:", err);
+            alert("⚠️ Ad not available right now. Please try again later.");
+        }
+    });
+}
 
 // ================= LOCAL STORAGE =================
 let userId = localStorage.getItem("userId");
@@ -124,7 +172,7 @@ function showAdExtra() {
     }
 }
 
-// ================= Offerwall Load =================
+// ================= Offerwall (আগের মতো) =================
 document.addEventListener('DOMContentLoaded', function() {
   if (!window.loadOfferWallSDK) {
     const script = document.createElement('script');
@@ -134,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ================= Offerwall Init =================
 (window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
   () => {
     window.loadOfferWallSDK({
@@ -143,25 +190,17 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(sdk => {
       window.gigaOfferWallSDK = sdk;
-
       sdk.on('rewardClaim', async (data) => {
-
-        let rewardCoin = 10;
-
-        userCoins += rewardCoin;
+        userCoins += 10;
         saveCoins();
-
         alert("🎉 Task Completed! +10 coins");
-
         await sdk.confirmReward(data.rewardId, data.hash);
       });
-
     })
     .catch(error => console.log(error));
   }
 );
 
-// ================= OPEN OFFERWALL =================
 document.getElementById("rewards-button")
   .addEventListener("click", () => {
     if (window.gigaOfferWallSDK) {
