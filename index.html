@@ -11,26 +11,11 @@
 <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
 <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
-<!-- Telega.io SDK -->
-<script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
-
 <style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-    text-align: center;
-}
+body { margin: 0; font-family: Arial; background: #0f172a; color: white; text-align: center; }
 
-.page {
-    display: none;
-    padding: 20px;
-}
-
-.active {
-    display: block;
-}
+.page { display: none; padding: 20px; }
+.active { display: block; }
 
 button {
     background: #22c55e;
@@ -40,7 +25,6 @@ button {
     border-radius: 10px;
     color: white;
     font-size: 16px;
-    cursor: pointer;
 }
 
 .nav {
@@ -78,11 +62,7 @@ button {
 
 <p>Your Coin: <span id="coin-task">0</span></p>
 
-<!-- GIGAPUB OFFERWALL -->
-<button id="rewards-button">🎁 Open Offerwall</button>
-
-<!-- TELEGA.IO AD -->
-<button onclick="showTelegaAd()">📺 Watch Telega Ad (+10 Coins)</button>
+<button id="rewards-button">Open Offerwall</button>
 
 </div>
 
@@ -96,7 +76,6 @@ button {
 
 // ================= LOCAL STORAGE =================
 let userId = localStorage.getItem("userId");
-
 if (!userId) {
     userId = "user_" + Math.floor(Math.random() * 1000000);
     localStorage.setItem("userId", userId);
@@ -104,13 +83,11 @@ if (!userId) {
 
 let userCoins = parseInt(localStorage.getItem("coins")) || 0;
 
-// ================= SAVE COINS =================
 function saveCoins() {
     localStorage.setItem("coins", userCoins);
     updateUI();
 }
 
-// ================= UPDATE UI =================
 function updateUI() {
     document.getElementById("coin-home").innerText = userCoins;
     document.getElementById("coin-task").innerText = userCoins;
@@ -118,11 +95,9 @@ function updateUI() {
 
 // ================= TELEGRAM USER =================
 const tg = window.Telegram.WebApp;
-
 tg.expand();
 
 const user = tg.initDataUnsafe?.user;
-
 if (user) {
     document.getElementById("name").innerText = user.first_name;
     document.getElementById("userid").innerText = "ID: " + user.id;
@@ -130,138 +105,73 @@ if (user) {
 
 // ================= NAVIGATION =================
 function openPage(page) {
-
-    document.querySelectorAll(".page").forEach(p => {
-        p.classList.remove("active");
-    });
-
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
     document.getElementById(page).classList.add("active");
 }
 
 // ================= AdExtra =================
 function showAdExtra() {
-
     if (typeof p_adextra === "function") {
-
         p_adextra(() => {
-
             userCoins += 5;
-
             saveCoins();
-
-            alert("🎉 Ad watched! +5 coins");
-
+            alert("Ad watched! +5 coins");
         }, () => {
-
-            alert("❌ Ad failed");
-
+            alert("Ad failed");
         });
-
     } else {
-
-        alert("⚠️ Ad not ready");
-
+        alert("Ad not ready");
     }
-}
-
-// ================= TELEGA.IO ADS =================
-const ads = window.TelegaIn.AdsController.create_miniapp({
-    token: '3cead624-45a4-4bf8-8825-1253a9c87981'
-});
-
-function showTelegaAd() {
-
-    ads.ad_show({
-        adBlockUuid: "d7ba3cee-ae84-4c68-9713-57912b25f5c4"
-    })
-
-    .then(() => {
-
-        userCoins += 10;
-
-        saveCoins();
-
-        alert("🎉 Telega Ad Completed! +10 Coins");
-
-    })
-
-    .catch((err) => {
-
-        console.log(err);
-
-        alert("⚠️ Ad not available right now");
-
-    });
 }
 
 // ================= Offerwall Load =================
 document.addEventListener('DOMContentLoaded', function() {
-
-    if (!window.loadOfferWallSDK) {
-
-        const script = document.createElement('script');
-
-        script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
-
-        script.async = true;
-
-        document.head.appendChild(script);
-    }
+  if (!window.loadOfferWallSDK) {
+    const script = document.createElement('script');
+    script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
+    script.async = true;
+    document.head.appendChild(script);
+  }
 });
 
 // ================= Offerwall Init =================
 (window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
+  () => {
+    window.loadOfferWallSDK({
+      projectId: '3256',
+      userId: userId
+    })
+    .then(sdk => {
+      window.gigaOfferWallSDK = sdk;
 
-    () => {
+      sdk.on('rewardClaim', async (data) => {
 
-        window.loadOfferWallSDK({
-            projectId: '3256',
-            userId: userId
-        })
+        let rewardCoin = 10;
 
-        .then(sdk => {
+        userCoins += rewardCoin;
+        saveCoins();
 
-            window.gigaOfferWallSDK = sdk;
+        alert("🎉 Task Completed! +10 coins");
 
-            sdk.on('rewardClaim', async (data) => {
+        await sdk.confirmReward(data.rewardId, data.hash);
+      });
 
-                let rewardCoin = 10;
-
-                userCoins += rewardCoin;
-
-                saveCoins();
-
-                alert("🎉 Task Completed! +10 Coins");
-
-                await sdk.confirmReward(
-                    data.rewardId,
-                    data.hash
-                );
-            });
-
-        })
-
-        .catch(error => console.log(error));
-    }
+    })
+    .catch(error => console.log(error));
+  }
 );
 
 // ================= OPEN OFFERWALL =================
 document.getElementById("rewards-button")
-
-.addEventListener("click", () => {
-
+  .addEventListener("click", () => {
     if (window.gigaOfferWallSDK) {
-
         window.gigaOfferWallSDK.open();
-
     } else {
-
-        alert("⚠️ Offerwall not ready");
-
+        alert("Offerwall not ready");
     }
 });
 
-// ================= INIT UI =================
+// INIT UI
 updateUI();
 
 </script>
