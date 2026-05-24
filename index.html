@@ -15,42 +15,39 @@
 <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
 
 <style>
-body { 
-    margin: 0; 
-    font-family: Arial; 
-    background: #0f172a; 
-    color: white; 
-}
+    body { 
+        margin: 0; 
+        font-family: Arial, sans-serif; 
+        background: #0f172a; 
+        color: white; 
+        text-align: center;
+    }
+    .page { display: none; padding: 20px; min-height: 100vh; }
+    .active { display: block; }
 
-.page { display: none; padding: 20px; min-height: 100vh; }
-.active { display: block; }
+    button {
+        background: #22c55e;
+        border: none;
+        padding: 14px 20px;
+        margin: 10px 0;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        width: 90%;
+        font-weight: bold;
+    }
+    .task-btn { background: #3b82f6; }
 
-button {
-    background: #22c55e;
-    border: none;
-    padding: 14px 20px;
-    margin: 10px 0;
-    border-radius: 12px;
-    color: white;
-    font-size: 16px;
-    width: 90%;
-    font-weight: bold;
-}
-
-.task-btn {
-    background: #3b82f6;
-}
-
-.nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #111827;
-    display: flex;
-    justify-content: space-around;
-    padding: 8px 0;
-    border-top: 1px solid #334155;
-}
+    .nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: #111827;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        border-top: 1px solid #334155;
+    }
 </style>
 </head>
 
@@ -62,7 +59,7 @@ button {
     <p id="name">Loading...</p>
     <p id="userid"></p>
     <p>Coin: <span id="coin-home">0</span></p>
-    <button onclick="showAdExtra()">🚀 Watch Ad</button>
+    <button onclick="showAdExtra()">🚀 Watch Ad (+5 Coins)</button>
 </div>
 
 <!-- ================= TASK PAGE ================= -->
@@ -83,51 +80,30 @@ button {
             🎁 Rewarded Ad (+50 Coins)
         </button>
 
-        <button id="rewards-button">Open Offerwall</button>
+        <button id="rewards-button">🌟 Open Offerwall</button>
     </div>
 </div>
 
 <!-- ================= NAVIGATION ================= -->
 <div class="nav">
-    <button onclick="openPage('home')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    </button>
-    <button onclick="openPage('task')">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM12 3c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-    </button>
+    <button onclick="openPage('home')">🏠 Home</button>
+    <button onclick="openPage('task')">📋 Tasks</button>
 </div>
 
 <script>
-// ================= Telega.io Setup =================
-const ads = window.TelegaIn.AdsController.create_miniapp({
-    token: '3cead624-45a4-4bf8-8825-1253a9c87981'
-});
+// ================= Telegram WebApp =================
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-// ================= Show Telega Ad =================
-function showTelegaAd(type) {
-    ads.ad_show({
-        adBlockUuid: "d7ba3cee-ae84-4c68-9713-57912b25f5c4",
-        onClose: () => {
-            console.log("Ad closed");
-        },
-        onReward: () => {
-            userCoins += 50;
-            saveCoins();
-            alert("🎉 Congratulations! +50 PP Coins Added to your balance!");
-        },
-        onError: (err) => {
-            console.error("Ad Error:", err);
-            alert("⚠️ Ad not available right now. Please try again later.");
-        }
-    });
+const user = tg.initDataUnsafe?.user;
+if (user) {
+    document.getElementById("name").innerText = user.first_name || "User";
+    document.getElementById("userid").innerText = "ID: " + user.id;
 }
 
-// ================= LOCAL STORAGE =================
-let userId = localStorage.getItem("userId");
-if (!userId) {
-    userId = "user_" + Math.floor(Math.random() * 1000000);
-    localStorage.setItem("userId", userId);
-}
+// ================= Local Storage & Coins =================
+let userId = localStorage.getItem("userId") || "user_" + Math.floor(Math.random() * 1000000);
+localStorage.setItem("userId", userId);
 
 let userCoins = parseInt(localStorage.getItem("coins")) || 0;
 
@@ -141,20 +117,25 @@ function updateUI() {
     document.getElementById("coin-task").innerText = userCoins;
 }
 
-// ================= TELEGRAM USER =================
-const tg = window.Telegram.WebApp;
-tg.expand();
+// ================= Telega.io Ads =================
+const ads = window.TelegaIn.AdsController.create_miniapp({
+    token: '3cead624-45a4-4bf8-8825-1253a9c87981'
+});
 
-const user = tg.initDataUnsafe?.user;
-if (user) {
-    document.getElementById("name").innerText = user.first_name;
-    document.getElementById("userid").innerText = "ID: " + user.id;
-}
-
-// ================= NAVIGATION =================
-function openPage(page) {
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(page).classList.add("active");
+function showTelegaAd(type) {
+    ads.ad_show({
+        adBlockUuid: "d7ba3cee-ae84-4c68-9713-57912b25f5c4",
+        onClose: () => console.log("Ad closed"),
+        onReward: () => {
+            userCoins += 50;
+            saveCoins();
+            alert("🎉 +50 PP Coins Added!");
+        },
+        onError: (err) => {
+            console.error("Ad Error:", err);
+            alert("⚠️ Ad not available right now.");
+        }
+    });
 }
 
 // ================= AdExtra =================
@@ -163,54 +144,57 @@ function showAdExtra() {
         p_adextra(() => {
             userCoins += 5;
             saveCoins();
-            alert("Ad watched! +5 coins");
+            alert("✅ Ad watched! +5 Coins");
         }, () => {
-            alert("Ad failed");
+            alert("❌ Ad failed or closed");
         });
     } else {
-        alert("Ad not ready");
+        alert("Ad not ready yet");
     }
 }
 
-// ================= Offerwall (আগের মতো) =================
+// ================= GigaPub Offerwall =================
 document.addEventListener('DOMContentLoaded', function() {
-  if (!window.loadOfferWallSDK) {
-    const script = document.createElement('script');
-    script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
-    script.async = true;
-    document.head.appendChild(script);
-  }
-});
-
-(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
-  () => {
-    window.loadOfferWallSDK({
-      projectId: '3256',
-      userId: userId
-    })
-    .then(sdk => {
-      window.gigaOfferWallSDK = sdk;
-      sdk.on('rewardClaim', async (data) => {
-        userCoins += 10;
-        saveCoins();
-        alert("🎉 Task Completed! +10 coins");
-        await sdk.confirmReward(data.rewardId, data.hash);
-      });
-    })
-    .catch(error => console.log(error));
-  }
-);
-
-document.getElementById("rewards-button")
-  .addEventListener("click", () => {
-    if (window.gigaOfferWallSDK) {
-        window.gigaOfferWallSDK.open();
-    } else {
-        alert("Offerwall not ready");
+    if (!window.loadOfferWallSDK) {
+        const script = document.createElement('script');
+        script.src = 'https://wall.giga.pub/api/v1/loader.js?projectId=3256';
+        script.async = true;
+        document.head.appendChild(script);
     }
 });
 
-// INIT UI
+(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(() => {
+    window.loadOfferWallSDK({
+        projectId: '3256',
+        userId: userId
+    })
+    .then(sdk => {
+        window.gigaOfferWallSDK = sdk;
+        sdk.on('rewardClaim', async (data) => {
+            userCoins += 10;
+            saveCoins();
+            alert("🎉 Task Completed! +10 Coins");
+            await sdk.confirmReward(data.rewardId, data.hash);
+        });
+    })
+    .catch(error => console.error("Offerwall Error:", error));
+});
+
+document.getElementById("rewards-button").addEventListener("click", () => {
+    if (window.gigaOfferWallSDK) {
+        window.gigaOfferWallSDK.open();
+    } else {
+        alert("Offerwall is loading... Please wait");
+    }
+});
+
+// ================= Navigation =================
+function openPage(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+}
+
+// ================= Init =================
 updateUI();
 
 </script>
