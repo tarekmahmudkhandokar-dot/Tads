@@ -5,31 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PP Coin App</title>
 <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "987925",
-              appId: "3767",
-            });
-          </script>
+<script>
+  window.TelegramAdsController = new TelegramAdsController();
+  window.TelegramAdsController.initialize({
+    pubId: "987925",
+    appId: "3767",
+  });
+</script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "987925",
-              appId: "3767",
-            });
-          </script>
-          <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-          <script>
-            window.TelegramAdsController = new TelegramAdsController();
-            window.TelegramAdsController.initialize({
-              pubId: "987925",
-              appId: "5127",
-            });
-          </script>
-          
+<script>
+  window.TelegramAdsController = new TelegramAdsController();
+  window.TelegramAdsController.initialize({
+    pubId: "987925",
+    appId: "3767",
+  });
+</script>
+<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+<script>
+  window.TelegramAdsController = new TelegramAdsController();
+  window.TelegramAdsController.initialize({
+    pubId: "987925",
+    appId: "5127",
+  });
+</script>
+
 <!-- AdExtra -->
 <script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
 <script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
@@ -74,7 +74,7 @@ button {
 
 <p>Coin: <span id="coin-home">0</span></p>
 
-<button onclick="showAdExtra()">🚀 Watch Ad</button>
+<button onclick="showWatchAd()">🚀 Watch Ad</button>
 
 </div>
 
@@ -132,19 +132,9 @@ function openPage(page) {
     document.getElementById(page).classList.add("active");
 }
 
-// ================= AdExtra =================
-function showAdExtra() {
-    if (typeof p_adextra === "function") {
-        p_adextra(() => {
-            userCoins += 5;
-            saveCoins();
-            alert("Ad watched! +5 coins");
-        }, () => {
-            alert("Ad failed");
-        });
-    } else {
-        alert("Ad not ready");
-    }
+// ================= Watch Ad - Open Custom Ad Page =================
+function showWatchAd() {
+    window.open("https://tarekmahmudkhandokar-dot.github.io/Tads/ads", "_blank");
 }
 
 // ================= Offerwall Load =================
@@ -168,14 +158,10 @@ document.addEventListener('DOMContentLoaded', function() {
       window.gigaOfferWallSDK = sdk;
 
       sdk.on('rewardClaim', async (data) => {
-
         let rewardCoin = 10;
-
         userCoins += rewardCoin;
         saveCoins();
-
         alert("🎉 Task Completed! +10 coins");
-
         await sdk.confirmReward(data.rewardId, data.hash);
       });
 
