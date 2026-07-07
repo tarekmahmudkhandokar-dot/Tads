@@ -15,6 +15,25 @@
 </head>
 <body>
 
+<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (window.TelegramAdsController) {
+
+        const tgAds = new TelegramAdsController();
+
+        tgAds.initialize({
+            pubId: "987925",
+            appId: "5127"
+        });
+
+    }
+
+});
+</script>
+  
   <div class="box">
     <h1>You are close to your reward!</h1>
     <p>Just click 'Continue' below.</p>
