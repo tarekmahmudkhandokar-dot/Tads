@@ -5,18 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PP Coin - Reward</title>
   <style>
-    /* আপনার পূর্বের CSS কোড এখানে থাকবে */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a0033; color: white; height: 100vh; overflow: hidden; position: relative; }
     .header { position: fixed; top: 0; left: 0; right: 0; background: #0f0022; padding: 14px 20px; text-align: center; border-bottom: 1px solid #4b0082; }
     .container { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-    .reward-box { background: rgba(30, 0, 60, 0.95); border: 2px solid #8a2be2; border-radius: 18px; padding: 35px 25px; width: 100%; max-width: 360px; }
-    button { margin-top: 10px; padding: 16px 50px; font-size: 18px; font-weight: bold; background: linear-gradient(45deg, #8a2be2, #ba55d3); color: white; border: none; border-radius: 50px; cursor: pointer; width: 100%; }
-    button:disabled { background: #4a2a6b; color: #aaa; }
-    .warning { background: #c62828; color: white; padding: 14px 20px; border-radius: 10px; margin: 25px 0 10px; font-size: 14.5px; }
+    .reward-box { background: rgba(30, 0, 60, 0.95); border: 2px solid #8a2be2; border-radius: 18px; padding: 35px 25px; width: 100%; max-width: 360px; box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3); }
+    h1 { font-size: 23px; margin-bottom: 12px; color: #d8b4ff; }
+    p { font-size: 16.5px; margin-bottom: 25px; color: #c8b4ff; line-height: 1.4; }
+    .timer { font-size: 18px; font-weight: bold; color: #ffd700; margin: 20px 0; }
+    button { margin-top: 10px; padding: 16px 50px; font-size: 18px; font-weight: bold; background: linear-gradient(45deg, #8a2be2, #ba55d3); color: white; border: none; border-radius: 50px; cursor: pointer; width: 100%; box-shadow: 0 6px 15px rgba(138, 43, 226, 0.4); }
+    button:disabled { background: #4a2a6b; color: #aaa; cursor: not-allowed; }
+    .warning { background: #c62828; color: white; padding: 14px 20px; border-radius: 10px; margin: 25px 0 10px; font-size: 14.5px; font-weight: bold; }
   </style>
 
-  <!-- RichAds Script -->
   <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
 </head>
 <body>
@@ -27,31 +28,48 @@
     <div class="reward-box">
       <h1>You are very close to your reward!</h1>
       <p>Please wait for the notification to appear.</p>
+      
       <div class="timer" id="timerText">Please wait <span id="count">10</span> seconds...</div>
+      
       <button id="continueBtn" disabled>Continue</button>
-      <div class="warning">⚠️ NO WEBSITE VISIT = NO REWARD ⚠️</div>
+      
+      <div class="warning">
+        ⚠️ NO WEBSITE VISIT = NO REWARD ⚠️<br>
+        Don't close the page until reward loads!
+      </div>
     </div>
   </div>
 
   <script>
-    // আপনার যে অ্যাপ আইডিটি প্রধান, সেটি এখানে দিন
-    const MAIN_APP_ID = "7754"; 
-    let adsController;
+    const pubId = "987925";
+    const appIds = ["7754", "3767", "5127"]; // এখানে আপনার আইডিগুলো সিরিয়াল অনুযায়ী দেওয়া আছে
+    let currentAdsController = null;
 
-    window.onload = function() {
-      // ১. শুধুমাত্র একবার কন্ট্রোলার ইনিশিয়েট করা
-      try {
-        adsController = new TelegramAdsController();
-        adsController.initialize({
-          pubId: "987925",
-          appId: MAIN_APP_ID,
-        });
-        console.log("Ads initialized with AppID:", MAIN_APP_ID);
-      } catch(e) {
-        console.error("Ads Init Error:", e);
+    // অ্যাড লোড করার ফাংশন (Fallback strategy)
+    function loadAd(index) {
+      if (index >= appIds.length) {
+        console.log("No more IDs to try.");
+        return;
       }
 
-      // ২. টাইমার লজিক
+      try {
+        currentAdsController = new TelegramAdsController();
+        currentAdsController.initialize({
+          pubId: pubId,
+          appId: appIds[index],
+        });
+        console.log("Initialized with AppID:", appIds[index]);
+      } catch (e) {
+        console.error("Failed to load AppID: " + appIds[index] + ", trying next...");
+        loadAd(index + 1);
+      }
+    }
+
+    window.onload = function() {
+      // শুরুতে প্রথম আইডি দিয়ে অ্যাড লোড করার চেষ্টা করবে
+      loadAd(0);
+
+      // টাইমার লজিক
       let timeLeft = 10;
       const countEl = document.getElementById('count');
       const timerText = document.getElementById('timerText');
@@ -67,11 +85,10 @@
         }
       }, 1000);
 
-      // ৩. বাটন ক্লিক করলে অ্যাড কল করা
+      // বাটন ক্লিক ইভেন্ট
       btn.addEventListener('click', () => {
-        if (adsController) {
-          // এটি অরিজিনাল RichAds পুশ নোটিফিকেশন ট্রিগার করবে
-          adsController.show(); 
+        if (currentAdsController) {
+          currentAdsController.show();
         }
       });
     };
