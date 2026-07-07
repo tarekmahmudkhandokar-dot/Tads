@@ -4,72 +4,121 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PP Coin - Reward</title>
+
   <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+
   <style>
-    body { background: #0f0022; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
-    .box { text-align: center; background: #1a0033; padding: 30px; border-radius: 20px; border: 1px solid #4b0082; width: 90%; max-width: 400px; box-shadow: 0 0 20px rgba(138, 43, 226, 0.3); }
-    h1 { font-size: 22px; color: #d8b4ff; margin-bottom: 15px; }
-    p { font-size: 16px; color: #c8b4ff; margin-bottom: 25px; }
-    button { background: linear-gradient(45deg, #8a2be2, #0088cc); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 18px; }
+    body{
+      background:#0f0022;
+      color:#fff;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      margin:0;
+      font-family:Segoe UI,sans-serif;
+    }
+    .box{
+      text-align:center;
+      background:#1a0033;
+      padding:30px;
+      border-radius:20px;
+      border:1px solid #4b0082;
+      width:90%;
+      max-width:400px;
+    }
+    button{
+      width:100%;
+      padding:16px;
+      font-size:18px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+    }
   </style>
 </head>
+
 <body>
 
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+<div class="box">
+    <h2>You are close to your reward!</h2>
+    <p>Just click Continue.</p>
+
+    <button id="btn">
+        Continue
+    </button>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
 
-    if (window.TelegramAdsController) {
+const pubId="987925";
 
-        const tgAds = new TelegramAdsController();
+const appIds=[
+    "7754",
+    "3767",
+    "5127"
+];
+
+let tgAds=null;
+
+function initAds(index){
+
+    if(index>=appIds.length){
+        console.log("No App ID available.");
+        return;
+    }
+
+    try{
+
+        tgAds=new TelegramAdsController();
 
         tgAds.initialize({
-            pubId: "987925",
-            appId: "5127"
+            pubId:pubId,
+            appId:appIds[index]
         });
+
+        console.log("Initialized:",appIds[index]);
+
+    }catch(e){
+
+        console.log("Failed:",appIds[index]);
+
+        initAds(index+1);
 
     }
 
-});
+}
+
+initAds(0);
+
+document.getElementById("btn").onclick=function(){
+
+    if(!tgAds){
+        alert("Ads not ready.");
+        return;
+    }
+
+    try{
+
+        if(typeof tgAds.triggerNativeNotification==="function"){
+
+            tgAds.triggerNativeNotification();
+
+        }else{
+
+            alert("Native Push Notification is not supported for this App ID.");
+
+        }
+
+    }catch(e){
+
+        console.error(e);
+
+    }
+
+};
+
 </script>
-  
-  <div class="box">
-    <h1>You are close to your reward!</h1>
-    <p>Just click 'Continue' below.</p>
-    <button id="btn">Continue</button>
-  </div>
 
-  <script>
-    const pubId = "987925";
-    const appIds = ["7754", "3767", "5127"];
-    let adController = new TelegramAdsController();
-
-    // Fallback লজিক: একটির পর একটি আইডি ট্রাই করবে
-    function initAds(index) {
-      if (index >= appIds.length) return;
-      
-      try {
-        adController.initialize({
-          pubId: pubId,
-          appId: appIds[index]
-        });
-        console.log("Initialized with ID:", appIds[index]);
-      } catch (e) {
-        console.error("Failed ID:", appIds[index], "Trying next...");
-        initAds(index + 1);
-      }
-    }
-
-    // পেজ লোড হলে অ্যাড সেটআপ শুরু
-    initAds(0);
-
-    // বাটন ক্লিক ইভেন্ট
-    document.getElementById('btn').addEventListener('click', () => {
-      if (adController) {
-        adController.show();
-      }
-    });
-  </script>
 </body>
 </html>
