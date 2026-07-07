@@ -4,35 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PP Coin App</title>
+
 <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
 <script>
   window.TelegramAdsController = new TelegramAdsController();
-  window.TelegramAdsController.initialize({
-    pubId: "987925",
-    appId: "3767",
-  });
-</script>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-<script>
-  window.TelegramAdsController = new TelegramAdsController();
-  window.TelegramAdsController.initialize({
-    pubId: "987925",
-    appId: "3767",
-  });
-</script>
-<script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-<script>
-  window.TelegramAdsController = new TelegramAdsController();
-  window.TelegramAdsController.initialize({
-    pubId: "987925",
-    appId: "5127",
-  });
+  window.TelegramAdsController.initialize({ pubId: "987925", appId: "3767" });
 </script>
 
-<!-- AdExtra -->
-<script async src="https://partner.adextra.io/jt/fbcbc5db7d4d1a01fa6db0b51a1c936e815b1c23.js"></script>
-<script async src="https://partner.adextra.io/jt/c1d6dbfa330a0f130ae43b4de0d12a76a415ebb0.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 body { margin: 0; font-family: Arial; background: #0f172a; color: white; text-align: center; }
@@ -66,27 +45,18 @@ button {
 
 <!-- ================= HOME PAGE ================= -->
 <div id="home" class="page active">
-
 <h2>💰 PP Coin Station</h2>
-
 <p id="name">Loading...</p>
 <p id="userid"></p>
-
 <p>Coin: <span id="coin-home">0</span></p>
-
 <button onclick="showWatchAd()">🚀 Watch Ad</button>
-
 </div>
 
 <!-- ================= TASK PAGE ================= -->
 <div id="task" class="page">
-
 <h2>🎯 Complete Tasks & Earn</h2>
-
 <p>Your Coin: <span id="coin-task">0</span></p>
-
 <button id="rewards-button">Open Offerwall</button>
-
 </div>
 
 <!-- ================= NAVIGATION ================= -->
@@ -97,12 +67,14 @@ button {
 
 <script>
 
+// ================= TELEGRAM WEB APP =================
+const tg = window.Telegram.WebApp;
+tg.expand();
+tg.ready();
+
 // ================= LOCAL STORAGE =================
-let userId = localStorage.getItem("userId");
-if (!userId) {
-    userId = "user_" + Math.floor(Math.random() * 1000000);
-    localStorage.setItem("userId", userId);
-}
+let userId = localStorage.getItem("userId") || "user_" + Math.floor(Math.random() * 1000000);
+localStorage.setItem("userId", userId);
 
 let userCoins = parseInt(localStorage.getItem("coins")) || 0;
 
@@ -117,12 +89,9 @@ function updateUI() {
 }
 
 // ================= TELEGRAM USER =================
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 const user = tg.initDataUnsafe?.user;
 if (user) {
-    document.getElementById("name").innerText = user.first_name;
+    document.getElementById("name").innerText = user.first_name || "User";
     document.getElementById("userid").innerText = "ID: " + user.id;
 }
 
@@ -132,12 +101,15 @@ function openPage(page) {
     document.getElementById(page).classList.add("active");
 }
 
-// ================= Watch Ad - Open Custom Ad Page =================
+// ================= Watch Ad - Open Inside Telegram Mini App =================
 function showWatchAd() {
-    window.open("https://tarekmahmudkhandokar-dot.github.io/Tads/ads", "_blank");
+    // Telegram Mini App এর ভিতরে নতুন পেজ ওপেন
+    tg.openLink("https://tarekmahmudkhandokar-dot.github.io/Tads/ads", {
+        try_instant_view: true
+    });
 }
 
-// ================= Offerwall Load =================
+// ================= Offerwall Load & Init (আগের মতো রাখা হয়েছে) =================
 document.addEventListener('DOMContentLoaded', function() {
   if (!window.loadOfferWallSDK) {
     const script = document.createElement('script');
@@ -147,37 +119,26 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ================= Offerwall Init =================
-(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(
-  () => {
-    window.loadOfferWallSDK({
-      projectId: '3256',
-      userId: userId
-    })
+(window.loadGigaSDKCallbacks || (window.loadGigaSDKCallbacks = [])).push(() => {
+  window.loadOfferWallSDK({ projectId: '3256', userId: userId })
     .then(sdk => {
       window.gigaOfferWallSDK = sdk;
-
       sdk.on('rewardClaim', async (data) => {
-        let rewardCoin = 10;
-        userCoins += rewardCoin;
+        userCoins += 10;
         saveCoins();
         alert("🎉 Task Completed! +10 coins");
         await sdk.confirmReward(data.rewardId, data.hash);
       });
-
     })
     .catch(error => console.log(error));
-  }
-);
+});
 
-// ================= OPEN OFFERWALL =================
-document.getElementById("rewards-button")
-  .addEventListener("click", () => {
-    if (window.gigaOfferWallSDK) {
-        window.gigaOfferWallSDK.open();
-    } else {
-        alert("Offerwall not ready");
-    }
+document.getElementById("rewards-button").addEventListener("click", () => {
+  if (window.gigaOfferWallSDK) {
+    window.gigaOfferWallSDK.open();
+  } else {
+    alert("Offerwall not ready");
+  }
 });
 
 // INIT UI
